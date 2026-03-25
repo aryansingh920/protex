@@ -26,17 +26,15 @@ export const getClaim = async (req: Request, res: Response) => {
     try {
       const { eventId, userId }: request = req.body;
 
-      // Basic Validation
       if (!eventId || !userId) {
         res.status(400).json({ error: "Missing eventId or userId" });
         return;
       }
 
-      // 1. Fire and Forget to Kafka
+
       await sendClaimCommand(eventId, userId);
 
-      // 2. Respond immediately with 202 (Accepted)
-      // This keeps the UI snappy even if Kafka or the DB is slow
+
       res.status(200).json({
         message: "Claim request received and is being processed",
         eventId,
