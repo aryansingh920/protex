@@ -8,7 +8,7 @@ import { pool } from "./helper/db";
 
 
 
-const envPath = path.resolve(__dirname, "Config.env");
+const envPath = path.resolve(__dirname, ".env");
 dotenv.config({ path: envPath });
 
 const app: Application = express();
