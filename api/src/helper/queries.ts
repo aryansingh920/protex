@@ -9,4 +9,15 @@ const getEventsQuery = fs.readFileSync(
   "utf-8",
 );
 
-export { getEventsQuery };
+
+const AllEventsQuery = fs.readFileSync(
+  path.join(queriesPath, "select", "allEvents.sql"),
+  "utf-8",
+);
+
+const AllUsersQuery = fs.readFileSync(
+  path.join(queriesPath, "select", "allUsers.sql"),
+  "utf-8",
+);
+
+export { getEventsQuery,AllEventsQuery,AllUsersQuery };

@@ -1,24 +1,16 @@
 import secrets
-
 import psycopg2
 import psycopg2.extras
-import json
 import random
-import time
 import os
 from datetime import datetime
 from dotenv import load_dotenv
+from service.helper.load_query import load_query
+from service.helper.get_connection import get_connection
 
 load_dotenv()
 
-# --- Configuration ---
-DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "host": os.getenv("DB_HOST"),
-    "port": os.getenv("DB_PORT")
-}
+
 
 REGIONS = [
     'Asia', 'Europe', 'US', 'Africa', 'LATAM',
@@ -109,23 +101,9 @@ LAST_NAMES = [
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def load_query(filename):
-    """Reads a SQL query from the database/queries folder."""
-    print(BASE_DIR)
-    print(os.getcwd(),os.listdir(os.getcwd()))
-    path = os.path.join(os.getcwd(), "database", "query", "insert",filename)
-    print(path)
-    try:
-        with open(path, 'r') as f:
-            return f.read()
-    except():
-        print("File Not Found", os.getcwd())
 
 
 
-
-def get_connection():
-    return psycopg2.connect(**DB_CONFIG)
 
 
 def generate_random_username():
@@ -140,7 +118,7 @@ def generate_random_full_name():
 
 
 def ingest_event_bulk(count: int = 1000, batch_size: int = 100):
-    query = load_query("ingestorEventInsert.sql")
+    query = load_query("insert","ingestorEventInsert.sql")
     conn = None
     try:
         conn = get_connection()
@@ -166,7 +144,7 @@ def ingest_event_bulk(count: int = 1000, batch_size: int = 100):
 
 
 def ingest_bulk_users(count: int = 50):
-    query = load_query("ingestorUserInsert.sql")
+    query = load_query("insert","ingestorUserInsert.sql")
     conn = None
     try:
         conn = get_connection()

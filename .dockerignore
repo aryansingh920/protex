@@ -21,3 +21,10 @@ docker-compose.yml
 
 # Environment secrets (Docker uses env_file anyway)
 .env
+
+
+service/helper/__pycache__
+service/module/__pycache__
+service/ingestor/__pycache__
+service/consumer/__pycache__
+service/__pycache__
