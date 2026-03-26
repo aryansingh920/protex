@@ -46,3 +46,4 @@ service/consumer/__pycache__
 service/__pycache__
 
 client/node_modules
+client/build
