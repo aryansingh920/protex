@@ -23,10 +23,7 @@ COPY service/ ./service/
 # Copy database folder (SQL files used by scripts)
 COPY database/ ./database/
 
-# # Ensure entrypoint is executable (important on Linux containers built from macOS)
-# RUN chmod +x /app/service/entrypoint.sh
-
 # .env is NOT baked in — it's injected by docker-compose via env_file
 
 # Default command: run the ingestor in stream mode
-CMD ["python", "service/ingestor.py", "bulk","1000"]
+CMD ["python", "service/ingestor.py", "bulk","1000","20"]

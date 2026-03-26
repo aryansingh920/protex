@@ -1,3 +1,5 @@
+import secrets
+
 import psycopg2
 import psycopg2.extras
 import json
@@ -11,17 +13,15 @@ load_dotenv()
 
 # --- Configuration ---
 DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME", "postgres"),
-    "user": os.getenv("DB_USER", "postgres"),
-    "password": os.getenv("DB_PASSWORD", "password"),
-    "host": os.getenv("DB_HOST", "localhost"),
-    "port": os.getenv("DB_PORT", "5432")
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
+    "port": os.getenv("DB_PORT")
 }
 
 REGIONS = [
-    # Original
     'Asia', 'Europe', 'US', 'Africa', 'LATAM',
-    # Extended
     'South Asia', 'Southeast Asia', 'East Asia', 'Central Asia',
     'Middle East', 'North Africa', 'Sub-Saharan Africa',
     'Western Europe', 'Eastern Europe', 'Northern Europe', 'Southern Europe',
@@ -90,6 +90,21 @@ CONTENTS = [
     "Radicalization pattern detected in activity log",
 ]
 
+
+USER_PREFIXES = ['mod', 'admin', 'reviewer', 'safety_op', 'guard']
+
+FIRST_NAMES = [
+    'James', 'Maria', 'Liam', 'Sofia', 'Noah', 'Aisha', 'Ethan', 'Priya',
+    'Lucas', 'Fatima', 'Oliver', 'Yuki', 'Mateo', 'Amara', 'Arjun', 'Chloe',
+    'Wei', 'Layla', 'Carlos', 'Zara', 'Ravi', 'Elena', 'Jin', 'Nadia'
+]
+
+LAST_NAMES = [
+    'Smith', 'Garcia', 'Chen', 'Patel', 'Nguyen', 'Kim', 'Okafor', 'Müller',
+    'Santos', 'Ibrahim', 'Tanaka', 'Rossi', 'Ahmed', 'Johansson', 'Diallo',
+    'Fernandez', 'Park', 'Sharma', 'Ali', 'Kowalski', 'Tremblay', 'Costa'
+]
+
 # ──────────────────────────────────────────────
 # Single event ingestion (original behavior)
 # ──────────────────────────────────────────────
@@ -106,7 +121,7 @@ def ingest_random_event():
         content = random.choice(CONTENTS)
 
         # Load SQL from file
-        with open(os.path.join(BASE_DIR, "..", "database", "query", "ingestorInsert.sql"), "r") as f:
+        with open(os.path.join(BASE_DIR, "..", "database", "query", "insert","ingestorEventInsert.sql"), "r") as f:
             insert_query = f.read()
 
         cur.execute(insert_query, (content, region))
@@ -122,12 +137,27 @@ def ingest_random_event():
         if conn:
             cur.close()
             conn.close()
+
+
+
+
 # ──────────────────────────────────────────────
 # Bulk ingestion using execute_values (fast)
 # ──────────────────────────────────────────────
 
 
-def ingest_bulk(count: int = 1000, batch_size: int = 100):
+def get_connection():
+    return psycopg2.connect(**DB_CONFIG)
+
+
+def generate_random_username():
+    prefix = random.choice(USER_PREFIXES)
+    suffix = secrets.token_hex(4)
+    return f"{prefix}_{suffix}"
+
+
+
+def ingest_event_bulk(count: int = 1000, batch_size: int = 100):
     """
     Insert `count` events in batches of `batch_size`.
     Uses psycopg2.extras.execute_values for high-speed bulk insert.
@@ -180,10 +210,43 @@ def ingest_bulk(count: int = 1000, batch_size: int = 100):
             conn.close()
 
 
-def get_connection():
-    return psycopg2.connect(**DB_CONFIG)
+def generate_random_full_name():
+    return random.choice(USER_PREFIXES), random.choice(FIRST_NAMES), random.choice(LAST_NAMES)
+# then: (prefix, first_name, last_name) # (part_a, part_b, part_c) in random order
 
 
+def ingest_bulk_users(count: int = 50):
+    conn = None
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        rows = []
+        for _ in range(count):
+            part_a, part_b, part_c = generate_random_full_name()
+            curr_row = (
+                generate_random_username(),
+                part_a,
+                part_b,
+                part_c,
+                random.choice(REGIONS)
+            )
+            print("ROW:", curr_row)
+            rows.append(curr_row)
+
+        psycopg2.extras.execute_values(
+            cur,
+            "INSERT INTO users (username, first_name, last_name, prefix, region) VALUES %s ON CONFLICT DO NOTHING",
+            rows
+        )
+        conn.commit()
+        print(f"✅ Successfully ingested {count} random moderators.")
+
+    except Exception as e:
+        print(f"❌ User Bulk Error: {e}")
+    finally:
+        if conn:
+            conn.close()
 # ──────────────────────────────────────────────
 # Entry point — choose mode via env or arg
 # ──────────────────────────────────────────────
@@ -193,9 +256,13 @@ if __name__ == "__main__":
     mode = sys.argv[1] if len(sys.argv) > 1 else "stream"
 
     if mode == "bulk":
-        count = int(sys.argv[2]) if len(sys.argv) > 2 else 1000
-        batch = int(sys.argv[3]) if len(sys.argv) > 3 else 100
-        ingest_bulk(count=count, batch_size=batch)
+        event_count = int(sys.argv[2]) if len(sys.argv) > 2 else 1000
+        user_count = int(sys.argv[3]) 
+        
+        # batch = int(sys.argv[3]) if len(sys.argv) > 3 else 100
+        ingest_bulk_users(user_count)
+
+        ingest_event_bulk(count=event_count, batch_size=100)
 
     else:
         print("✨ Starting Event Ingestor in STREAM mode (Ctrl+C to stop)...")

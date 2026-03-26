@@ -1,3 +1,11 @@
 {
-  "cSpell.words": ["healthcheck", "ingestor", "initdb", "isready", "mydb"]
+  "cSpell.words": [
+    "dotenv",
+    "healthcheck",
+    "ingestor",
+    "initdb",
+    "isready",
+    "mydb",
+    "psycopg"
+  ]
 }

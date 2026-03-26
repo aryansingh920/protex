@@ -5,7 +5,7 @@ import * as path from "path";
 const queriesPath = path.join(process.cwd(), "database", "query");
 
 const getEventsQuery = fs.readFileSync(
-  path.join(queriesPath, "getEvents.sql"),
+  path.join(queriesPath, "select", "getEvents.sql"),
   "utf-8",
 );
 

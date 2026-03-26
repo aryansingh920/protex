@@ -71,5 +71,4 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-    # entrypoint: ["/bin/bash", "/app/service/entrypoint.sh"]
-    restart: on-failure                   # retry if DB isn't ready on first attempt
+    restart: on-failure                   
