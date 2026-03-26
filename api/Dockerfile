@@ -1,8 +1,8 @@
 FROM node:22-bookworm-slim
 WORKDIR /app
-COPY gateway/package*.json ./
+COPY api/package*.json ./
 RUN npm install
-COPY gateway/ ./
+COPY api/ ./
 # Add the destination folder name here to keep the structure:
 COPY database/ ./database/
 EXPOSE 8080

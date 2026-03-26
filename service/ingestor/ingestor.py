@@ -105,45 +105,23 @@ LAST_NAMES = [
     'Fernandez', 'Park', 'Sharma', 'Ali', 'Kowalski', 'Tremblay', 'Costa'
 ]
 
-# ──────────────────────────────────────────────
-# Single event ingestion (original behavior)
-# ──────────────────────────────────────────────
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def ingest_random_event():
-    conn = None
+
+def load_query(filename):
+    """Reads a SQL query from the database/queries folder."""
+    print(BASE_DIR)
+    print(os.getcwd(),os.listdir(os.getcwd()))
+    path = os.path.join(os.getcwd(), "database", "query", "insert",filename)
+    print(path)
     try:
-        conn = get_connection()
-        cur = conn.cursor()
-
-        region = random.choice(REGIONS)
-        content = random.choice(CONTENTS)
-
-        # Load SQL from file
-        with open(os.path.join(BASE_DIR, "..", "database", "query", "insert","ingestorEventInsert.sql"), "r") as f:
-            insert_query = f.read()
-
-        cur.execute(insert_query, (content, region))
-        event_id = cur.fetchone()[0]
-        conn.commit()
-
-        print(
-            f"[{datetime.now().strftime('%H:%M:%S')}] Injected: {region} | ID: {event_id}")
-
-    except Exception as e:
-        print(f"Ingestion Error: {e}")
-    finally:
-        if conn:
-            cur.close()
-            conn.close()
+        with open(path, 'r') as f:
+            return f.read()
+    except():
+        print("File Not Found", os.getcwd())
 
 
-
-
-# ──────────────────────────────────────────────
-# Bulk ingestion using execute_values (fast)
-# ──────────────────────────────────────────────
 
 
 def get_connection():
@@ -156,66 +134,39 @@ def generate_random_username():
     return f"{prefix}_{suffix}"
 
 
-
-def ingest_event_bulk(count: int = 1000, batch_size: int = 100):
-    """
-    Insert `count` events in batches of `batch_size`.
-    Uses psycopg2.extras.execute_values for high-speed bulk insert.
-    """
-    conn = None
-    total_inserted = 0
-    start = time.time()
-
-    try:
-        conn = get_connection()
-        cur = conn.cursor()
-
-        print(
-            f"\n📦 Starting bulk ingestion: {count} events in batches of {batch_size}...")
-
-        for batch_start in range(0, count, batch_size):
-            batch_count = min(batch_size, count - batch_start)
-
-            rows = [
-                (random.choice(CONTENTS), random.choice(REGIONS), 'available')
-                for _ in range(batch_count)
-            ]
-
-            psycopg2.extras.execute_values(
-                cur,
-                "INSERT INTO events (content, region, status) VALUES %s",
-                rows
-            )
-            conn.commit()
-            total_inserted += batch_count
-
-            elapsed = time.time() - start
-            rate = total_inserted / elapsed if elapsed > 0 else 0
-            print(f"  ✅ Batch done | Inserted: {total_inserted}/{count} | "
-                  f"Rate: {rate:.0f} rows/sec | Elapsed: {elapsed:.1f}s")
-
-        elapsed = time.time() - start
-        print(f"\n🎉 Bulk ingestion complete!")
-        print(f"   Total inserted : {total_inserted}")
-        print(f"   Total time     : {elapsed:.2f}s")
-        print(f"   Avg rate       : {total_inserted / elapsed:.0f} rows/sec\n")
-
-    except Exception as e:
-        print(f"❌ Bulk Ingestion Error: {e}")
-        if conn:
-            conn.rollback()
-    finally:
-        if conn:
-            cur.close()
-            conn.close()
-
-
 def generate_random_full_name():
     return random.choice(USER_PREFIXES), random.choice(FIRST_NAMES), random.choice(LAST_NAMES)
 # then: (prefix, first_name, last_name) # (part_a, part_b, part_c) in random order
 
 
+def ingest_event_bulk(count: int = 1000, batch_size: int = 100):
+    query = load_query("ingestorEventInsert.sql")
+    conn = None
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        for batch_start in range(0, count, batch_size):
+            batch_count = min(batch_size, count - batch_start)
+            rows = [
+                (random.choice(CONTENTS), random.choice(REGIONS), 'available')
+                for _ in range(batch_count)
+            ]
+
+            # execute_values handles the VALUES %s expansion automatically
+            psycopg2.extras.execute_values(cur, query, rows)
+            conn.commit()
+
+        print(f"Successfully ingested {count} events.")
+    except Exception as e:
+        print(f"Event Bulk Error: {e}")
+    finally:
+        if conn:
+            conn.close()
+
+
 def ingest_bulk_users(count: int = 50):
+    query = load_query("ingestorUserInsert.sql")
     conn = None
     try:
         conn = get_connection()
@@ -223,33 +174,27 @@ def ingest_bulk_users(count: int = 50):
 
         rows = []
         for _ in range(count):
-            part_a, part_b, part_c = generate_random_full_name()
-            curr_row = (
-                generate_random_username(),
-                part_a,
-                part_b,
-                part_c,
+            prefix, first, last = random.choice(USER_PREFIXES), random.choice(
+                FIRST_NAMES), random.choice(LAST_NAMES)
+            rows.append((
+                f"{prefix}_{secrets.token_hex(4)}",
+                prefix,
+                first,
+                last,
                 random.choice(REGIONS)
-            )
-            print("ROW:", curr_row)
-            rows.append(curr_row)
+            ))
 
-        psycopg2.extras.execute_values(
-            cur,
-            "INSERT INTO users (username, first_name, last_name, prefix, region) VALUES %s ON CONFLICT DO NOTHING",
-            rows
-        )
+        psycopg2.extras.execute_values(cur, query, rows)
         conn.commit()
-        print(f"✅ Successfully ingested {count} random moderators.")
-
+        print(f"Successfully ingested {count} random moderators.")
     except Exception as e:
-        print(f"❌ User Bulk Error: {e}")
+        print(f"User Bulk Error: {e}")
     finally:
         if conn:
             conn.close()
-# ──────────────────────────────────────────────
-# Entry point — choose mode via env or arg
-# ──────────────────────────────────────────────
+            
+            
+            
 if __name__ == "__main__":
     import sys
 
@@ -264,8 +209,3 @@ if __name__ == "__main__":
 
         ingest_event_bulk(count=event_count, batch_size=100)
 
-    else:
-        print("✨ Starting Event Ingestor in STREAM mode (Ctrl+C to stop)...")
-        while True:
-            ingest_random_event()
-            time.sleep(random.randint(1,5))

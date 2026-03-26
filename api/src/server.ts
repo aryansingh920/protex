@@ -12,7 +12,7 @@ const envPath = path.resolve(__dirname, ".env");
 dotenv.config({ path: envPath });
 
 const app: Application = express();
-const PORT = process.env.GATEWAY_PORT;
+const PORT = process.env.API_PORT;
 
 async function testDBConnection() {
   try {
