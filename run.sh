@@ -9,3 +9,7 @@ docker exec -it postgres_db psql -U admin -d mydb
 # SELECT COUNT(*) FROM events;
 # SELECT * FROM events LIMIT 5;
 # \q
+
+
+# rebuild just 1 service
+docker compose up -d --build python-consumer

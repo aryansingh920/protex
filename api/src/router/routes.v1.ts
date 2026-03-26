@@ -10,7 +10,7 @@ const router: Router = express.Router();
 router
     .get("/", getHello)
     .post("/claim", getClaim)
-    .post("/knowledge", getKnowledge)
+    .post("/aknowledge", getKnowledge)
     .get("/event",getEvents)
 
 export default router;

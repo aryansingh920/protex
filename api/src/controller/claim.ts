@@ -8,7 +8,7 @@ interface request{
 }
 
 const KAFKA_TOPIC_NAME = process.env.KAFKA_TOPIC_NAME || "";
-const KAFKA_PRODUCER_TYPE = process.env.KAFKA_PRODUCER_TYPE || "";
+const KAFKA_PRODUCER_TYPE = "CLAIM_EVENT";
 
 export const sendClaimCommand = async (eventId: string, userId: string) => {
   await producer.send({
