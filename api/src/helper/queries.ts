@@ -5,10 +5,9 @@ import * as path from "path";
 const queriesPath = path.join(process.cwd(), "database", "query");
 
 const getEventsQuery = fs.readFileSync(
-  path.join(queriesPath, "select", "getEvents.sql"),
+  path.join(queriesPath, "select", "getEventsOnRegion.sql"),
   "utf-8",
 );
-
 
 const AllEventsQuery = fs.readFileSync(
   path.join(queriesPath, "select", "allEvents.sql"),
@@ -20,4 +19,20 @@ const AllUsersQuery = fs.readFileSync(
   "utf-8",
 );
 
-export { getEventsQuery,AllEventsQuery,AllUsersQuery };
+const checkEventQuery = fs.readFileSync(
+  path.join(queriesPath, "select", "checkEvent.sql"),
+  "utf-8",
+);
+
+const checkUserQuery = fs.readFileSync(
+  path.join(queriesPath, "select", "checkUser.sql"),
+  "utf-8",
+);
+
+export {
+  getEventsQuery,
+  AllEventsQuery,
+  AllUsersQuery,
+  checkEventQuery,
+  checkUserQuery,
+};

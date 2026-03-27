@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { producer } from "../helper/kafka_producer";
+import { pool } from "../helper/db";
+import { checkUserQuery, checkEventQuery } from "../helper/queries";
 
 interface request {
   eventId: string;
@@ -9,7 +11,7 @@ interface request {
 const KAFKA_TOPIC_NAME = process.env.KAFKA_TOPIC_NAME || "";
 const KAFKA_PRODUCER_TYPE = "ACKNOWLEDGE_EVENT";
 
-export const sendKnowledgeCommand = async (eventId: string, userId: string) => {
+export const sendAcknowledgeCommand = async (eventId: string, userId: string) => {
   await producer.send({
     topic: KAFKA_TOPIC_NAME,
     messages: [
@@ -33,12 +35,31 @@ export const getKnowledge = async (req: Request, res: Response) => {
       return;
     }
 
-    await sendKnowledgeCommand(eventId, userId);
+    const checkEvent = await pool.query(checkEventQuery, [eventId]);
+    const checkUser = await pool.query(checkUserQuery, [userId]);
 
-    res.status(200).json({
+    const resp = {
       message: "Claim request received and is being processed",
       eventId,
-    });
+    };
+
+    // console.log(checkEvent.rows, checkUser.rows)
+
+    if (checkEvent.rows.length) {
+      if (checkEvent.rows[0]["status"] == "available") {
+        if (checkUser.rows.length) {
+          await sendAcknowledgeCommand(eventId, userId);
+        } else {
+          resp.message = "User Not available";
+        }
+      } else {
+        resp.message = "Event Not available";
+      }
+    } else {
+      resp.message = "No Event available";
+    }
+    // console.log("Resp", resp);
+    res.status(200).json(resp);
   } catch (error) {
     console.error("Error publishing to Kafka:", error);
     res.status(500).json({ error: "Internal Server Error" });
