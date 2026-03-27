@@ -49,3 +49,4 @@ client/node_modules
 client/build
 
 service/cache/__pycache__
+client/.next

@@ -49,7 +49,6 @@ def create_consumer():
                 # Logic: Check if the message matches your producer type
                 # (Assuming the type is sent within the message body)
                 if (payload["type"] == "CLAIM_EVENT"):
-                    
                     result = process_claim(
                         user_id=payload["payload"]["userId"], event_id=payload["payload"]["eventId"])
                     if result["status"] == "locked":
@@ -58,6 +57,9 @@ def create_consumer():
                         print("Claim failed at DB level.")
                     elif result["status"] == "success":
                         print(f"Claimed: {result['data']}")
+                
+                # if (payload["type"] == "ACKNOWLEDGE_EVENT"):
+                    
 
 
             except json.JSONDecodeError:

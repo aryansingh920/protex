@@ -14,3 +14,4 @@ docker exec -it postgres_db psql -U admin -d mydb
 
 # rebuild just 1 service
 docker compose up -d --build python-consumer
+docker compose up -d --build node-api

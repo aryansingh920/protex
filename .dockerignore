@@ -32,3 +32,4 @@ service/cache/__pycache__
 
 client/node_modules
 api/node_modules
+client/.next

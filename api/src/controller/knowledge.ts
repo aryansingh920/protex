@@ -31,12 +31,15 @@ export const getKnowledge = async (req: Request, res: Response) => {
     // console.log(checkEvent.rows, checkUser.rows)
 
     if (checkEvent.rows.length) {
-      if (checkEvent.rows[0]["status"] == "available") {
+      if (checkEvent.rows[0]["status"] == "claimed") {
         if (checkUser.rows.length) {
           await sendAcknowledgeCommand(eventId, userId);
         } else {
           resp.message = "User Not available";
         }
+      } else if (checkEvent.rows[0]["status"] == "available")
+      {
+        resp.message = "Event not acknowledged";
       } else {
         resp.message = "Event Not available";
       }

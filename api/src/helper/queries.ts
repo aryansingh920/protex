@@ -29,10 +29,22 @@ const checkUserQuery = fs.readFileSync(
   "utf-8",
 );
 
+const loginUserQuery = fs.readFileSync(
+  path.join(queriesPath, "select", "loginUser.sql"),
+  "utf-8",
+);
+
+const getAllRegion = fs.readFileSync(
+  path.join(queriesPath, "select", "getAllRegion.sql"),
+  "utf-8",
+);
+
 export {
   getEventsQuery,
   AllEventsQuery,
   AllUsersQuery,
   checkEventQuery,
   checkUserQuery,
+  loginUserQuery,
+  getAllRegion
 };
