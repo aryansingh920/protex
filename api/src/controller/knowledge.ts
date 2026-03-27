@@ -11,21 +11,6 @@ interface request {
 const KAFKA_TOPIC_NAME = process.env.KAFKA_TOPIC_NAME || "";
 const KAFKA_PRODUCER_TYPE = "ACKNOWLEDGE_EVENT";
 
-export const sendAcknowledgeCommand = async (eventId: string, userId: string) => {
-  await producer.send({
-    topic: KAFKA_TOPIC_NAME,
-    messages: [
-      {
-        key: eventId,
-        value: JSON.stringify({
-          type: KAFKA_PRODUCER_TYPE,
-          payload: { eventId, userId, timestamp: new Date().toISOString() },
-        }),
-      },
-    ],
-  });
-};
-
 export const getKnowledge = async (req: Request, res: Response) => {
   try {
     const { eventId, userId }: request = req.body;
@@ -64,4 +49,22 @@ export const getKnowledge = async (req: Request, res: Response) => {
     console.error("Error publishing to Kafka:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+};
+
+export const sendAcknowledgeCommand = async (
+  eventId: string,
+  userId: string,
+) => {
+  await producer.send({
+    topic: KAFKA_TOPIC_NAME,
+    messages: [
+      {
+        key: eventId,
+        value: JSON.stringify({
+          type: KAFKA_PRODUCER_TYPE,
+          payload: { eventId, userId, timestamp: new Date().toISOString() },
+        }),
+      },
+    ],
+  });
 };
