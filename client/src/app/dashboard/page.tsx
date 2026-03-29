@@ -7,15 +7,11 @@ import {
   Alert,
   Badge,
   Box,
-  Button,
   Container,
-  Divider,
   Group,
   Loader,
-  Modal,
   Paper,
   Stack,
-  Table,
   Text,
   Title,
   Tooltip,
@@ -25,23 +21,13 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconAlertCircle,
-  IconCalendar,
-  IconCircleCheck,
-  IconCircleDot,
-  IconClock,
-  IconMapPin,
   IconRefresh,
   IconWifi,
   IconWifiOff,
 } from "@tabler/icons-react";
 import DashboardNavbar from "@/components/DashboardNavbar";
 import { useAppSelector } from "@/store/hooks";
-import {
-  apiGetEvents,
-  apiClaimEvent,
-  apiAcknowledgeEvent,
-  Event as AppEvent,
-} from "@/lib/api";
+import { apiGetEvents, Event as AppEvent } from "@/lib/api";
 import { useEventSocket } from "@/hooks/useEventSocket";
 import { EventSocketMessage } from "@/lib/socket";
 import EventsTable from "@/components/EventsTable";
