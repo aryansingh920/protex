@@ -35,6 +35,18 @@ To prevent race conditions and ensure system reliability, checks are implemented
 
 ---
 
+### Containerized Orchestration (Docker Compose)
+The entire ecosystem is unified using **Docker Compose**, ensuring that the high-resiliency design works identically in development and production. I designed the orchestration to handle service dependencies and health synchronization:
+
+* **Service Dependency Management:** I configured `depends_on` with `service_healthy` conditions. This ensures the Node-API and Python Consumers don't start until **Postgres**, **Redis**, and **Kafka** are fully booted and reporting "healthy."
+* **Network Isolation:** All services communicate over a dedicated internal Docker network, protecting the database and message brokers from direct external exposure.
+* **Unified Environment:** A single root `.env` file manages the configuration for the TypeScript, Python, and Next.js environments, ensuring consistent connection strings across different runtimes.
+* **Volumes & Persistence:** I implemented Docker volumes for PostgreSQL data to ensure that ingested events and user progress are persisted even if the containers are restarted or rebuilt.
+
+
+
+---
+
 ## GenAI & LLM Collaboration Disclosure
 
 In the interest of meeting high-standard technical requirements within a condensed timeline, Generative AI was utilized strategically as a "Boilerplate Accelerator." 
