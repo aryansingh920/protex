@@ -27,26 +27,34 @@ Create a file named `.env` in the **root** directory of the project. This file i
 Paste the following configuration into your `.env` file:
 
 ```env
-API_PORT=
+# API
+# API
+API_PORT=8080
 
-DB_HOST=
-DB_PORT=
-DB_USER=
-DB_PASSWORD=
-DB_NAME=
+# Database
+DB_HOST=postgres
+DB_PORT=5432
+DB_USER=testuser
+DB_PASSWORD=testpassword123
+DB_NAME=testdb
 
-KAFKA_BROKERS=
-KAFKA_CLIENT_ID=
-KAFKA_TOPIC_NAME=
+# Kafka
+KAFKA_BROKERS=kafka:9092
+KAFKA_CLIENT_ID=event-producer-service
+KAFKA_TOPIC_NAME=event-commands
 
-REDIS_HOST=
-REDIS_PORT=
+# Redis
+REDIS_HOST=redis
+REDIS_PORT=6379
 
-NEXT_PUBLIC_API_BASE_URL=
-NEXT_PUBLIC_WS_URL=
+# Client
+CLIENT_PORT=3000
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080
+NEXT_PUBLIC_WS_URL=ws://localhost:8001
 
-WS_HOST=
-WS_PORT=
+# WebSocket service
+WS_HOST=0.0.0.0
+WS_PORT=8001
 ```
 
 ### 3. Build and Start the Services
@@ -69,7 +77,11 @@ Because this application relies on a background ingestor service rather than man
 ### Step 1: Get a Valid User ID
 The `python-ingestor` service automatically populates the database with sample regions, events, and users. 
 1. Open your browser or use a tool like cURL/Postman.
-2. Navigate to: **`http://localhost:8080/api/allUsers`**
+2. Navigate to: **`http://localhost:8080/api/allUsers` or copy 
+```bash
+curl -s http://localhost:8080/api/allUsers | python -m json.tool   
+``` to your terminal.
+**
 3. Copy one of the `id` values and note the associated `region` from the JSON response.
 
 ### Step 2: Access the Frontend
