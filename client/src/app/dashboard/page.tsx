@@ -220,8 +220,10 @@ export default function DashboardPage() {
     else if (e.status === "acknowledged") acknowledged.push(e);
   }
 
-  // Claimed rows visible to this user — derived once here, passed straight to the table
   const visibleClaimed = claimed.filter((e) => e.claimed_by === user.id);
+  const visibleAcknowledged = acknowledged.filter(
+    (e) => e.claimed_by === user.id,
+  );
 
   return (
     <Box
@@ -349,7 +351,7 @@ export default function DashboardPage() {
               <EventsTable
                 title="Acknowledged Events"
                 status="acknowledged"
-                events={acknowledged}
+                events={visibleAcknowledged}
                 totalCount={acknowledged.length}
                 accentColor="green"
                 processingEvents={processingEvents}
