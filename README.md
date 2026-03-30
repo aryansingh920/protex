@@ -78,9 +78,12 @@ Because this application relies on a background ingestor service rather than man
 The `python-ingestor` service automatically populates the database with sample regions, events, and users. 
 1. Open your browser or use a tool like cURL/Postman.
 2. Navigate to: **`http://localhost:8080/api/allUsers` or copy 
+
 ```bash
 curl -s http://localhost:8080/api/allUsers | python -m json.tool   
-``` to your terminal.
+``` 
+to your terminal.
+
 **
 3. Copy one of the `id` values and note the associated `region` from the JSON response.
 
