@@ -53,7 +53,7 @@ In the interest of meeting high-standard technical requirements within a condens
 
 ### Human-Led Logic (Designed by Me)
 *   **Core Business Logic:** Defining the conditions for state transitions and the logic within the Python and Node controllers.
-*   **SQL Architecture:** Writing precise queries for atomic updates and complex joins.
+*   **SQL Architecture:** Writing precise queries for atomic updates.
 *   **System Orchestration:** Designing the inter-service communication flow between Kafka, Redis, and WebSockets.
 *   **Refactoring & Debugging:** Correcting and optimizing AI-generated code to ensure production readiness and fixing structural errors.
 *   **Infrastructure Design:** Defining the Docker Compose orchestration and environment variable mapping.
