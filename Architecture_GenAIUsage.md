@@ -75,5 +75,4 @@ AI was used to handle repetitive, low-logic tasks (the "plumbing" of the applica
 ## System Metrics & Health
 The Node-API exposes a `/metrics` endpoint for Prometheus scraping. This tracks:
 *   Device/Service Health.
-*   Throughput of event claims.
 *   System latency and response times.
