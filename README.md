@@ -6,9 +6,6 @@ This guide provides detailed, step-by-step instructions on how to set up, run, a
 
 ---
 
-* Repository Link : https://github.com/aryansingh920/event_assignment
-* Loom Video Explanation : https://www.loom.com/share/8eb66d9ef87c484d971a1dfed046db83
-
 ## Prerequisites
 
 Before you begin, ensure you have the following installed on your machine:
