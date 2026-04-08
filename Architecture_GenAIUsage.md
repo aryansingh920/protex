@@ -1,6 +1,6 @@
-# Protex: System Architecture & LLM Collaboration Strategy
+# Event Assignment: System Architecture & LLM Collaboration Strategy
 
-This document outlines the technical design, architectural philosophy, and the strategic use of Generative AI in the development of the Protex Region-Aware Event Assignment System.
+This document outlines the technical design, architectural philosophy, and the strategic use of Generative AI in the development of the Event Assignment Region-Aware Event Assignment System.
 
 ---
 
