@@ -3,9 +3,11 @@
 
 This guide provides detailed, step-by-step instructions on how to set up, run, and interact with the Protex backend and frontend services. The entire infrastructure is containerized and relies on Docker.
 
+
+---
+
 Repository Link : https://github.com/aryansingh920/event_assignment
 Loom Video Explanation : https://www.loom.com/share/8eb66d9ef87c484d971a1dfed046db83
----
 
 ## Prerequisites
 
